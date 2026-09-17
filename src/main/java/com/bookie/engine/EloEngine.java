@@ -1,5 +1,7 @@
 package com.bookie.engine;
 
+import java.math.BigDecimal;
+
 public class EloEngine {
   private static final int SCALE = 400;
   private static final double D_BASE = 0.3;
@@ -9,6 +11,10 @@ public class EloEngine {
   public EloEngine(int k, int bias) {
     K = k;
     HOME_BIAS = bias;
+  }
+
+  private Double impliedProbability(BigDecimal odds) {
+    return (odds != null && odds.doubleValue() != 0.0) ? 1 / odds.doubleValue() : null;
   }
 
   public double calGoalDiffMultiplier(int homeGoal, int awayGoal) {
@@ -39,6 +45,23 @@ public class EloEngine {
     double pAwayWin = 1 - pDraw - pHomeWin;
 
     return new MatchResultProb(pHomeWin, pDraw, pAwayWin);
+  }
+
+  public MatchResultProb calMarketMatchResultProb(
+      BigDecimal homeOdds, BigDecimal drawOdds, BigDecimal awayOdds) {
+    Double impliedHomeProb = impliedProbability(homeOdds);
+    Double impliedDrawProb = impliedProbability(drawOdds);
+    Double impliedAwayProb = impliedProbability(awayOdds);
+
+    if (impliedAwayProb == null || impliedHomeProb == null || impliedDrawProb == null)
+      return new MatchResultProb(null, null, null);
+
+    Double totalImpliedProb = impliedAwayProb + impliedDrawProb + impliedHomeProb;
+    Double normalizedHomeProb = impliedHomeProb / totalImpliedProb;
+    Double normalizedDrawProb = impliedDrawProb / totalImpliedProb;
+    Double normalizedAwayProb = impliedAwayProb / totalImpliedProb;
+
+    return new MatchResultProb(normalizedHomeProb, normalizedDrawProb, normalizedAwayProb);
   }
 
   public ExpectedScores calExpectedScores(double ratingHome, double ratingAway) {

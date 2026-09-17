@@ -55,4 +55,32 @@ public class Prediction {
   public BigDecimal getHomeRatingBefore() {
     return homeRatingBefore;
   }
+
+  public BigDecimal getHomeWinProb() {
+    return homeWinProb;
+  }
+
+  public BigDecimal getDrawProb() {
+    return drawProb;
+  }
+
+  public BigDecimal getAwayWinProb() {
+    return awayWinProb;
+  }
+
+  public BigDecimal getMarketHomeWinProb() {
+    return marketHomeWinProb;
+  }
+
+  public BigDecimal getMarketDrawProb() {
+    return marketDrawProb;
+  }
+
+  public BigDecimal getMarketAwayWinProb() {
+    return marketAwayWinProb;
+  }
+
+  public Match getMatch() {
+    return match;
+  }
 }

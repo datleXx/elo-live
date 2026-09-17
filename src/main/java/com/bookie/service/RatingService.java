@@ -50,6 +50,27 @@ public class RatingService {
       MatchResultProb matchResultProb =
           eloEngine.calMatchResultProb(homeRatingBefore, awayRatingBefore, expectedScores.home());
 
+      MatchResultProb marketMatchResultProb =
+          eloEngine.calMarketMatchResultProb(
+              processingMatch.getHomeOdds(),
+              processingMatch.getDrawOdds(),
+              processingMatch.getAwayOdds());
+
+      BigDecimal marketHomeWinProb =
+          marketMatchResultProb.homeWinProb() != null
+              ? BigDecimal.valueOf(marketMatchResultProb.homeWinProb())
+              : null;
+
+      BigDecimal marketDrawProb =
+          marketMatchResultProb.drawProb() != null
+              ? BigDecimal.valueOf(marketMatchResultProb.drawProb())
+              : null;
+
+      BigDecimal marketAwayWinProb =
+          marketMatchResultProb.awayWinProb() != null
+              ? BigDecimal.valueOf(marketMatchResultProb.awayWinProb())
+              : null;
+
       Elo updatedRating =
           eloEngine.calElos(
               processingMatch.getFullTimeHomeGoals(),
@@ -77,9 +98,9 @@ public class RatingService {
               BigDecimal.valueOf(matchResultProb.homeWinProb()),
               BigDecimal.valueOf(matchResultProb.drawProb()),
               BigDecimal.valueOf(matchResultProb.awayWinProb()),
-              processingMatch.getHomeOdds(),
-              processingMatch.getDrawOdds(),
-              processingMatch.getAwayOdds());
+              marketHomeWinProb,
+              marketDrawProb,
+              marketAwayWinProb);
 
       batchRatings.add(newHomeRatingToSave);
       batchRatings.add(newAwayRatingToSave);

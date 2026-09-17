@@ -1,3 +1,3 @@
 package com.bookie.engine;
 
-public record MatchResultProb(double homeWinProb, double drawProb, double awayWinProb) {}
+public record MatchResultProb(Double homeWinProb, Double drawProb, Double awayWinProb) {}
