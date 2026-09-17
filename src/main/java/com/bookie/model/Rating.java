@@ -21,4 +21,13 @@ public class Rating {
   @ManyToOne
   @JoinColumn(name = "as_of_match_id")
   private Match asOfMatch;
+
+  protected Rating() {}
+  ;
+
+  public Rating(Team team, BigDecimal rating, Match asOfMatch) {
+    this.team = team;
+    this.rating = rating;
+    this.asOfMatch = asOfMatch;
+  }
 }

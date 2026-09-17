@@ -78,4 +78,28 @@ public class Match {
   public Team getAwayTeam() {
     return awayTeam;
   }
+
+  public int getFullTimeHomeGoals() {
+    return fullTimeHomeGoals;
+  }
+
+  public int getFullTimeAwayGoals() {
+    return fullTimeAwayGoals;
+  }
+
+  public MatchResult getFullTimeResult() {
+    return fullTimeResult;
+  }
+
+  public BigDecimal getHomeOdds() {
+    return homeOdds;
+  }
+
+  public BigDecimal getDrawOdds() {
+    return drawOdds;
+  }
+
+  public BigDecimal getAwayOdds() {
+    return awayOdds;
+  }
 }

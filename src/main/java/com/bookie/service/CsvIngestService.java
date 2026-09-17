@@ -80,12 +80,7 @@ public class CsvIngestService {
 
     try (Reader reader = Files.newBufferedReader(csvFile);
         CSVParser parser =
-            CSVFormat.DEFAULT
-                .builder()
-                .setHeader()
-                .setSkipHeaderRecord(true)
-                .build()
-                .parse(reader)) {
+            CSVFormat.DEFAULT.builder().setHeader().setSkipHeaderRecord(true).get().parse(reader)) {
 
       List<Match> batchList = new ArrayList<>();
 

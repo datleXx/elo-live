@@ -24,4 +24,35 @@ public class Prediction {
   private BigDecimal homeWinProb;
   private BigDecimal drawProb;
   private BigDecimal awayWinProb;
+  private BigDecimal marketHomeWinProb;
+  private BigDecimal marketDrawProb;
+  private BigDecimal marketAwayWinProb;
+
+  protected Prediction() {}
+  ;
+
+  public Prediction(
+      Match match,
+      BigDecimal homeRatingBefore,
+      BigDecimal awayRatingBefore,
+      BigDecimal homeWinProb,
+      BigDecimal drawProb,
+      BigDecimal awayWinProb,
+      BigDecimal marketHomeWinProb,
+      BigDecimal marketDrawProb,
+      BigDecimal marketAwayWinProb) {
+    this.match = match;
+    this.homeRatingBefore = homeRatingBefore;
+    this.awayRatingBefore = awayRatingBefore;
+    this.homeWinProb = homeWinProb;
+    this.drawProb = drawProb;
+    this.awayWinProb = awayWinProb;
+    this.marketHomeWinProb = marketHomeWinProb;
+    this.marketDrawProb = marketDrawProb;
+    this.marketAwayWinProb = marketAwayWinProb;
+  }
+
+  public BigDecimal getHomeRatingBefore() {
+    return homeRatingBefore;
+  }
 }

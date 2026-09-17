@@ -2,7 +2,7 @@ package com.bookie.engine;
 
 public class EloEngine {
   private static final int SCALE = 400;
-
+  private static final double D_BASE = 0.3;
   private final int K;
   private final int HOME_BIAS;
 
@@ -25,6 +25,20 @@ public class EloEngine {
         return (11.0 + absGD) / 8;
       }
     }
+  }
+
+  public double calPDraw(double homeRating, double awayRating) {
+    return Math.round(D_BASE * Math.exp(-Math.abs(homeRating - awayRating) / SCALE) * 100.0)
+        / 100.0;
+  }
+
+  public MatchResultProb calMatchResultProb(
+      double homeRating, double awayRating, double expectedHome) {
+    double pDraw = calPDraw(homeRating + HOME_BIAS, awayRating);
+    double pHomeWin = Math.round((expectedHome - 0.5 * pDraw) * 100.0) / 100.0;
+    double pAwayWin = 1 - pDraw - pHomeWin;
+
+    return new MatchResultProb(pHomeWin, pDraw, pAwayWin);
   }
 
   public ExpectedScores calExpectedScores(double ratingHome, double ratingAway) {

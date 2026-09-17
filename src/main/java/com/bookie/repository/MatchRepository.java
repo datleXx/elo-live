@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
   List<Match> findByCompetition(String competition);
+
+  List<Match> findByCompetitionOrderByMatchDateAsc(String competition);
 }
