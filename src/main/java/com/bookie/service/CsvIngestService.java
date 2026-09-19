@@ -1,5 +1,6 @@
 package com.bookie.service;
 
+import com.bookie.event.MatchResultIngestedEvent;
 import com.bookie.model.Match;
 import com.bookie.model.MatchKey;
 import com.bookie.model.MatchResult;
@@ -9,6 +10,7 @@ import com.bookie.repository.TeamRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ import java.util.*;
 public class CsvIngestService {
   private final TeamRepository teamRepo;
   private final MatchRepository matchRepo;
+  private final ApplicationEventPublisher eventPublisher;
 
   private static final DateTimeFormatter DATE_4Y = DateTimeFormatter.ofPattern("dd/MM/yyyy");
   private static final DateTimeFormatter DATE_2Y =
@@ -50,9 +53,13 @@ public class CsvIngestService {
     return new BigDecimal(value);
   }
 
-  public CsvIngestService(TeamRepository teamRepo, MatchRepository matchRepo) {
+  public CsvIngestService(
+      TeamRepository teamRepo,
+      MatchRepository matchRepo,
+      ApplicationEventPublisher applicationEventPublisher) {
     this.teamRepo = teamRepo;
     this.matchRepo = matchRepo;
+    this.eventPublisher = applicationEventPublisher;
   }
 
   @Transactional
@@ -135,6 +142,9 @@ public class CsvIngestService {
       }
 
       matchRepo.saveAll(batchList);
+
+      List<Long> matchIds = batchList.stream().map(match -> match.getId()).toList();
+      eventPublisher.publishEvent(new MatchResultIngestedEvent(matchIds));
     }
   }
 }

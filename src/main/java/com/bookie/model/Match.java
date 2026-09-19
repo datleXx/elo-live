@@ -24,8 +24,8 @@ public class Match {
   @JoinColumn(name = "away_team_id")
   private Team awayTeam;
 
-  private int fullTimeHomeGoals;
-  private int fullTimeAwayGoals;
+  private Integer fullTimeHomeGoals;
+  private Integer fullTimeAwayGoals;
 
   @Enumerated(EnumType.STRING)
   private MatchResult fullTimeResult;
@@ -41,8 +41,8 @@ public class Match {
       LocalDate matchDate,
       Team homeTeam,
       Team awayTeam,
-      int fullTimeHomeGoals,
-      int fullTimeAwayGoals,
+      Integer fullTimeHomeGoals,
+      Integer fullTimeAwayGoals,
       MatchResult fullTimeResult,
       BigDecimal homeOdds,
       BigDecimal drawOdds,
@@ -79,11 +79,11 @@ public class Match {
     return awayTeam;
   }
 
-  public int getFullTimeHomeGoals() {
+  public Integer getFullTimeHomeGoals() {
     return fullTimeHomeGoals;
   }
 
-  public int getFullTimeAwayGoals() {
+  public Integer getFullTimeAwayGoals() {
     return fullTimeAwayGoals;
   }
 

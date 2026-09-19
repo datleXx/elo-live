@@ -30,4 +30,12 @@ public class Rating {
     this.rating = rating;
     this.asOfMatch = asOfMatch;
   }
+
+  public BigDecimal getRating() {
+    return rating;
+  }
+
+  public Team getTeam() {
+    return team;
+  }
 }
