@@ -83,4 +83,8 @@ public class Prediction {
   public Match getMatch() {
     return match;
   }
+
+  public Long getId() {
+    return id;
+  }
 }

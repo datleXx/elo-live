@@ -3,6 +3,7 @@ package com.bookie.service;
 import com.bookie.engine.EloEngine;
 import com.bookie.engine.ExpectedScores;
 import com.bookie.engine.MatchResultProb;
+import com.bookie.event.PredictionsCreatedEvent;
 import com.bookie.event.RatingUpdatedEvent;
 import com.bookie.model.Match;
 import com.bookie.model.Prediction;
@@ -11,6 +12,7 @@ import com.bookie.model.Team;
 import com.bookie.repository.MatchRepository;
 import com.bookie.repository.PredictionRepository;
 import com.bookie.repository.RatingRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,20 +28,25 @@ public class CreatePredictionListener {
   private final RatingRepository ratingRepo;
   private final MatchRepository matchRepo;
   private final EloEngine engine;
+  private final ApplicationEventPublisher eventPublisher;
 
   public CreatePredictionListener(
       RatingRepository ratingRepository,
       MatchRepository matchRepository,
-      PredictionRepository predictionRepository) {
+      PredictionRepository predictionRepository,
+      ApplicationEventPublisher applicationEventPublisher) {
     ratingRepo = ratingRepository;
     matchRepo = matchRepository;
     predictionRepo = predictionRepository;
+    eventPublisher = applicationEventPublisher;
     engine = new EloEngine(20, 100);
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
   public void onRatingUpdated(RatingUpdatedEvent event) {
+    if (event.teamIds().isEmpty()) return;
+
     List<Prediction> batch = new ArrayList<>();
     Set<List<Long>> dedup = new HashSet<>();
     for (long teamId : event.teamIds()) {
@@ -103,6 +110,11 @@ public class CreatePredictionListener {
       batch.add(nextMatchPrediction);
     }
 
+    if (batch.isEmpty()) return;
+
     predictionRepo.saveAll(batch);
+
+    eventPublisher.publishEvent(
+        new PredictionsCreatedEvent(batch.stream().map(prediction -> prediction.getId()).toList()));
   }
 }

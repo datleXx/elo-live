@@ -38,4 +38,8 @@ public class Rating {
   public Team getTeam() {
     return team;
   }
+
+  public Match getAsOfMatch() {
+    return asOfMatch;
+  }
 }
