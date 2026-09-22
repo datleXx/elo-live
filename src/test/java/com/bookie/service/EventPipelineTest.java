@@ -59,7 +59,6 @@ class EventPipelineTest {
                 null,
                 null,
                 null,
-                null,
                 null));
 
     Path csvFile = new ClassPathResource("data/event_pipeline_test.csv").getFile().toPath();
@@ -70,8 +69,7 @@ class EventPipelineTest {
     assertThat(homeRating).isPresent();
     assertThat(homeRating.get().getRating()).isNotEqualByComparingTo(BigDecimal.valueOf(1500));
 
-    Optional<Prediction> upcomingPrediction =
-        predictionRepo.findByMatchId(upcomingFixture.getId());
+    Optional<Prediction> upcomingPrediction = predictionRepo.findByMatchId(upcomingFixture.getId());
     assertThat(upcomingPrediction).isPresent();
     assertThat(upcomingPrediction.get().getHomeRatingBefore())
         .isEqualByComparingTo(homeRating.get().getRating());

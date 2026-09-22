@@ -16,42 +16,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.*;
+
+import static com.bookie.util.CsvParsing.parseMatchDate;
+import static com.bookie.util.CsvParsing.parseOdds;
 
 @Service
 public class CsvIngestService {
   private final TeamRepository teamRepo;
   private final MatchRepository matchRepo;
   private final ApplicationEventPublisher eventPublisher;
-
-  private static final DateTimeFormatter DATE_4Y = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-  private static final DateTimeFormatter DATE_2Y =
-      new DateTimeFormatterBuilder()
-          .appendPattern("dd/MM/")
-          .appendValueReduced(ChronoField.YEAR, 2, 2, 1950)
-          .toFormatter();
-
-  private static LocalDate parseMatchDate(String raw) {
-    return raw.length() == 10 ? LocalDate.parse(raw, DATE_4Y) : LocalDate.parse(raw, DATE_2Y);
-  }
-
-  private static BigDecimal parseOdds(CSVRecord record, String column) {
-    if (!record.isMapped(column)) {
-      return null;
-    }
-    String value = record.get(column);
-    if (value.isBlank()) {
-      return null;
-    }
-    return new BigDecimal(value);
-  }
 
   public CsvIngestService(
       TeamRepository teamRepo,
@@ -120,10 +97,6 @@ public class CsvIngestService {
 
         int fullTimeHomeGoals = Integer.parseInt(record.get("FTHG"));
         int fullTimeAwayGoals = Integer.parseInt(record.get("FTAG"));
-        MatchResult fullTimeResult =
-            fullTimeAwayGoals > fullTimeHomeGoals
-                ? MatchResult.A
-                : fullTimeHomeGoals > fullTimeAwayGoals ? MatchResult.H : MatchResult.D;
 
         Match toSave =
             new Match(
@@ -133,7 +106,6 @@ public class CsvIngestService {
                 awayTeam,
                 fullTimeHomeGoals,
                 fullTimeAwayGoals,
-                fullTimeResult,
                 parseOdds(record, "B365H"),
                 parseOdds(record, "B365D"),
                 parseOdds(record, "B365A"));

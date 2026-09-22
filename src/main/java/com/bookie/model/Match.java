@@ -43,7 +43,6 @@ public class Match {
       Team awayTeam,
       Integer fullTimeHomeGoals,
       Integer fullTimeAwayGoals,
-      MatchResult fullTimeResult,
       BigDecimal homeOdds,
       BigDecimal drawOdds,
       BigDecimal awayOdds) {
@@ -53,10 +52,11 @@ public class Match {
     this.awayTeam = awayTeam;
     this.fullTimeHomeGoals = fullTimeHomeGoals;
     this.fullTimeAwayGoals = fullTimeAwayGoals;
-    this.fullTimeResult = fullTimeResult;
     this.homeOdds = homeOdds;
     this.drawOdds = drawOdds;
     this.awayOdds = awayOdds;
+
+    recordResults(fullTimeHomeGoals, fullTimeAwayGoals);
   }
 
   public Long getId() {
@@ -101,5 +101,17 @@ public class Match {
 
   public BigDecimal getAwayOdds() {
     return awayOdds;
+  }
+
+  public void recordResults(int homeGoals, int awayGoals) {
+    this.fullTimeHomeGoals = homeGoals;
+    this.fullTimeAwayGoals = awayGoals;
+
+    MatchResult fullTimeResult =
+        homeGoals > awayGoals
+            ? MatchResult.H
+            : awayGoals > homeGoals ? MatchResult.A : MatchResult.D;
+
+    this.fullTimeResult = fullTimeResult;
   }
 }

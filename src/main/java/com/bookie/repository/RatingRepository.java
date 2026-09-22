@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +15,16 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
   Optional<Rating> findByTeamIdAndAsOfMatchId(Long teamId, Long matchId);
 
   Optional<Rating> findFirstByTeamIdOrderByAsOfMatch_MatchDateDesc(Long teamId);
+
+  @Query(
+      """
+        SELECT r.rating FROM Rating r
+        WHERE r.team.id = :teamId
+            AND r.asOfMatch.matchDate <= :date
+        ORDER BY r.asOfMatch.matchDate DESC
+        LIMIT 1
+        """)
+  Optional<BigDecimal> findFirstByTeamIdBeforeDate(Long teamId, LocalDate date);
 
   @Query(
       """
@@ -32,4 +44,7 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
 
   @Transactional
   void deleteByTeamIdIn(List<Long> teamIds);
+
+  @Transactional
+  void deleteByAsOfMatch_Competition(String competition);
 }

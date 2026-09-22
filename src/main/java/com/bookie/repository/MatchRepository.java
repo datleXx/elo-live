@@ -5,6 +5,7 @@ import com.bookie.model.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +44,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   List<Match> findUpcomingFixuresByTeam(List<Long> teamIds);
 
   @Query(
-          """
+      """
                   SELECT m FROM Match m
                                     JOIN FETCH m.homeTeam
                                                       JOIN FETCH m.awayTeam
@@ -55,4 +56,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
                                     LIMIT 1
                   """)
   Optional<Match> findFirstUpcomingFixtureForTeam(Long teamId);
+
+  List<Match> findByCompetitionAndMatchDate(String competition, LocalDate date);
 }
