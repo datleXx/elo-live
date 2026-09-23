@@ -56,7 +56,8 @@ public class Match {
     this.drawOdds = drawOdds;
     this.awayOdds = awayOdds;
 
-    recordResults(fullTimeHomeGoals, fullTimeAwayGoals);
+    if (fullTimeHomeGoals != null && fullTimeAwayGoals != null)
+      recordResults(fullTimeHomeGoals, fullTimeAwayGoals);
   }
 
   public Long getId() {

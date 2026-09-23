@@ -58,4 +58,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   Optional<Match> findFirstUpcomingFixtureForTeam(Long teamId);
 
   List<Match> findByCompetitionAndMatchDate(String competition, LocalDate date);
+
+  void deleteByCompetition(String competition);
 }
