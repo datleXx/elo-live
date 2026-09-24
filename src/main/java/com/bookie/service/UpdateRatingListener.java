@@ -25,6 +25,7 @@ import java.util.List;
 @Component
 public class UpdateRatingListener {
   private final MatchRepository matchRepo;
+  private final RatingLookupService lookupService;
   private final RatingRepository ratingRepo;
   private final ApplicationEventPublisher eventPublisher;
 
@@ -32,9 +33,11 @@ public class UpdateRatingListener {
 
   public UpdateRatingListener(
       MatchRepository matchRepository,
+      RatingLookupService ratingLookupService,
       RatingRepository ratingRepository,
       ApplicationEventPublisher applicationEventPublisher) {
     matchRepo = matchRepository;
+    lookupService = ratingLookupService;
     ratingRepo = ratingRepository;
     eventPublisher = applicationEventPublisher;
 
@@ -69,20 +72,10 @@ public class UpdateRatingListener {
       LocalDate matchDate = updatedMatch.getMatchDate();
 
       BigDecimal homeRatingBefore =
-          (isReplay
-                  ? ratingRepo.findLatestForTeamInCompetitionBeforeDate(
-                      homeTeam.getId(), competition, matchDate)
-                  : ratingRepo.findLatestRealRatingForTeamBeforeDate(homeTeam.getId(), matchDate))
-              .map(Rating::getRating)
-              .orElse(BigDecimal.valueOf(1500));
+          lookupService.ratingAt(homeTeam.getId(), competition, matchDate);
 
       BigDecimal awayRatingBefore =
-          (isReplay
-                  ? ratingRepo.findLatestForTeamInCompetitionBeforeDate(
-                      awayTeam.getId(), competition, matchDate)
-                  : ratingRepo.findLatestRealRatingForTeamBeforeDate(awayTeam.getId(), matchDate))
-              .map(Rating::getRating)
-              .orElse(BigDecimal.valueOf(1500));
+          lookupService.ratingAt(awayTeam.getId(), competition, matchDate);
 
       Elo updatedRating =
           engine.calElos(

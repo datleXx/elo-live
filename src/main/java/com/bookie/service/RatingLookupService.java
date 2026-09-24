@@ -1,6 +1,7 @@
 package com.bookie.service;
 
 import com.bookie.repository.RatingRepository;
+import com.bookie.util.Constant;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,10 @@ public class RatingLookupService {
     ratingRepo = ratingRepository;
   }
 
-  @Cacheable(cacheNames = "ratingAt", key = "#teamId + ':' + #date")
-  public BigDecimal ratingAt(Long teamId, LocalDate date) {
-    return ratingRepo.findFirstByTeamIdBeforeDate(teamId, date).orElse(BigDecimal.valueOf(1500));
+  @Cacheable(cacheNames = "ratingAt", key = "#teamId + ':' + #competition + ':' + #date")
+  public BigDecimal ratingAt(Long teamId, String competition, LocalDate date) {
+    return ratingRepo
+        .findLatestRatingForTeamInCompetitionBeforeDate(teamId, competition, date)
+        .orElse(Constant.baseEloFor(competition));
   }
 }

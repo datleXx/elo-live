@@ -10,6 +10,7 @@ import com.bookie.model.Rating;
 import com.bookie.repository.MatchRepository;
 import com.bookie.repository.PredictionRepository;
 import com.bookie.repository.RatingRepository;
+import com.bookie.util.Constant;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,9 +41,13 @@ public class RatingService {
 
     for (Match processingMatch : allCompMatches) {
       Double homeRatingBefore =
-          teamRatingMap.getOrDefault(processingMatch.getHomeTeam().getId(), Double.valueOf(1500));
+          teamRatingMap.getOrDefault(
+              processingMatch.getHomeTeam().getId(),
+              Constant.baseEloFor(processingMatch.getCompetition()).doubleValue());
       Double awayRatingBefore =
-          teamRatingMap.getOrDefault(processingMatch.getAwayTeam().getId(), Double.valueOf(1500));
+          teamRatingMap.getOrDefault(
+              processingMatch.getAwayTeam().getId(),
+              Constant.baseEloFor(processingMatch.getCompetition()).doubleValue());
 
       ExpectedScores expectedScores =
           eloEngine.calExpectedScores(homeRatingBefore, awayRatingBefore);
