@@ -1,9 +1,12 @@
 package com.bookie.repository;
 
+import com.bookie.dto.TeamCompetition;
 import com.bookie.model.Match;
 import com.bookie.model.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -59,5 +62,32 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
   List<Match> findByCompetitionAndMatchDate(String competition, LocalDate date);
 
+  @Modifying
+  @Transactional
+  @Query("DELETE FROM Match m WHERE m.competition = :competition")
   void deleteByCompetition(String competition);
+
+  @Query(
+      """
+              SELECT m FROM Match m
+              WHERE m.homeTeam.id = :teamId OR m.awayTeam.id = :teamId
+              ORDER BY m.matchDate ASC
+              """)
+  List<Match> findAllForTeamOrderByDate(Long teamId);
+
+  @Query(
+      """
+        SELECT DISTINCT new com.bookie.dto.TeamCompetition(t.id, m.competition)
+        FROM Match m
+        JOIN m.homeTeam t
+        """)
+  List<TeamCompetition> findHomeTeamCompetitions();
+
+  @Query(
+      """
+        SELECT DISTINCT new com.bookie.dto.TeamCompetition(t.id, m.competition)
+        FROM Match m
+        JOIN m.awayTeam t
+        """)
+  List<TeamCompetition> findAwayTeamCompetitions();
 }

@@ -16,7 +16,7 @@ import java.util.*;
 
 @Service
 public class ReplayService {
-  private final MatchRepository matchRepo;
+ private final MatchRepository matchRepo;
   private final RatingRepository ratingRepo;
   private final PredictionRepository predictionRepo;
   private final TeamRepository teamRepo;

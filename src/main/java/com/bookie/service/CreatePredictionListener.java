@@ -20,6 +20,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -62,14 +63,25 @@ public class CreatePredictionListener {
 
       dedup.add(List.of(homeTeam.getId(), awayTeam.getId()));
 
+      // Same reasoning as the rating update itself: never look past this
+      // fixture's own date, and never cross the real/replay boundary, but
+      // real data stays continuous across every real division.
+      String competition = nextMatch.getCompetition();
+      boolean isReplay = competition.endsWith("_REPLAY");
+      LocalDate fixtureDate = nextMatch.getMatchDate();
+
       BigDecimal homeTeamBefore =
-          ratingRepo
-              .findFirstByTeamIdOrderByAsOfMatch_MatchDateDesc(homeTeam.getId())
+          (isReplay
+                  ? ratingRepo.findLatestForTeamInCompetitionBeforeDate(
+                      homeTeam.getId(), competition, fixtureDate)
+                  : ratingRepo.findLatestRealRatingForTeamBeforeDate(homeTeam.getId(), fixtureDate))
               .map(Rating::getRating)
               .orElse(BigDecimal.valueOf(1500));
       BigDecimal awayTeamBefore =
-          ratingRepo
-              .findFirstByTeamIdOrderByAsOfMatch_MatchDateDesc(awayTeam.getId())
+          (isReplay
+                  ? ratingRepo.findLatestForTeamInCompetitionBeforeDate(
+                      awayTeam.getId(), competition, fixtureDate)
+                  : ratingRepo.findLatestRealRatingForTeamBeforeDate(awayTeam.getId(), fixtureDate))
               .map(Rating::getRating)
               .orElse(BigDecimal.valueOf(1500));
       ExpectedScores nextMatchExpectedScores =

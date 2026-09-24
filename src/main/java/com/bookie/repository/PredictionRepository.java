@@ -2,6 +2,7 @@ package com.bookie.repository;
 
 import com.bookie.model.Prediction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,8 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
               """)
   List<Prediction> findForCompetition(String competition);
 
+  @Modifying
   @Transactional
+  @Query("DELETE FROM Prediction p WHERE p.match.competition = :competition")
   void deleteByMatch_Competition(String competition);
 }
