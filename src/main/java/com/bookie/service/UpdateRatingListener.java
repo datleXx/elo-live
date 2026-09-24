@@ -64,18 +64,18 @@ public class UpdateRatingListener {
       Team awayTeam = updatedMatch.getAwayTeam();
       String competition = updatedMatch.getCompetition();
 
-      // Never look past this match's own date (lookahead bias), and never
-      // cross the real/replay boundary - but real data stays continuous
-      // across every real division, since that's an actual promotion or
-      // relegation, not a different pool of data.
       boolean isReplay = competition.endsWith("_REPLAY");
       LocalDate matchDate = updatedMatch.getMatchDate();
+      String competitionToSave =
+          !isReplay
+              ? competition
+              : competition.substring(0, competition.length() - "_REPLAY".length());
 
       BigDecimal homeRatingBefore =
-          lookupService.ratingAt(homeTeam.getId(), competition, matchDate);
+          lookupService.ratingAt(homeTeam.getId(), competitionToSave, matchDate);
 
       BigDecimal awayRatingBefore =
-          lookupService.ratingAt(awayTeam.getId(), competition, matchDate);
+          lookupService.ratingAt(awayTeam.getId(), competitionToSave, matchDate);
 
       Elo updatedRating =
           engine.calElos(

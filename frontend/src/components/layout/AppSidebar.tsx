@@ -10,6 +10,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 
 const NAV_ITEMS = [
@@ -23,11 +24,12 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-3 py-3">
-        <div className="flex items-center gap-2 px-1">
-          <Shield className="size-5 shrink-0 text-primary" />
-          <span className="text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
-            Elo Live
-          </span>
+        <div className="flex items-center justify-between gap-2 px-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+          <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
+            <Shield className="size-5 shrink-0 text-primary" />
+            <span className="text-sm font-semibold tracking-tight">Elo Live</span>
+          </div>
+          <SidebarTrigger />
         </div>
       </SidebarHeader>
       <SidebarContent>
