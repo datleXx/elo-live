@@ -27,7 +27,6 @@ flowchart LR
     PG[(Postgres)]
     Redis[(Redis)]
     Source[football-data.co.uk]
-
     UI -- REST --> API
     WS -- live push --> UI
     API --> Engine
@@ -42,6 +41,7 @@ get computed a lot during a replay — nothing lives there that Postgres
 couldn't rebuild.
 
 ## What happens when a match finishes
+
 It publishes an event, and everything
 downstream reacts to it, each piece committing its own database work before
 the next one starts:
@@ -53,15 +53,14 @@ sequenceDiagram
     participant Predictions as Prediction listener
     participant Push as WebSocket publisher
     participant UI as Browser
-
-    Ingest->>Ingest: save match result, commit
-    Ingest-)Ratings: MatchResultIngestedEvent
-    Ratings->>Ratings: compute new Elo, save, commit
-    Ratings-)Predictions: RatingUpdatedEvent
-    Ratings-)Push: RatingUpdatedEvent
-    Predictions->>Predictions: predict each team's next fixture, commit
-    Predictions-)Push: PredictionsCreatedEvent
-    Push->>UI: push over /topic/ratings and /topic/predictions
+    Ingest ->> Ingest: save match result, commit
+    Ingest -) Ratings: MatchResultIngestedEvent
+    Ratings ->> Ratings: compute new Elo, save, commit
+    Ratings -) Predictions: RatingUpdatedEvent
+    Ratings -) Push: RatingUpdatedEvent
+    Predictions ->> Predictions: predict each team's next fixture, commit
+    Predictions -) Push: PredictionsCreatedEvent
+    Push ->> UI: push over /topic/ratings and /topic/predictions
 ```
 
 Every hop only fires **after** the previous transaction actually commits.
@@ -72,7 +71,7 @@ still get rolled back.
 
 ## Running it locally
 
-You'll need Postgres and Redis. Docker's the easy way:
+You'll need Postgres and Redis. Use Docker for convenience:
 
 ```bash
 docker run -d --name bookie-postgres -p 5432:5432 \
@@ -81,13 +80,13 @@ docker run -d --name bookie-postgres -p 5432:5432 \
 docker run -d --name bookie-redis -p 6379:6379 redis:7
 ```
 
-Then, backend:
+Backend:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Flyway migrates the schema on startup — nothing to run by hand. Frontend:
+Frontend:
 
 ```bash
 cd frontend
